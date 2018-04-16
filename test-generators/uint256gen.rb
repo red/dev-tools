@@ -19,12 +19,12 @@ no_zero_divide_pairs = test_pairs.clone
 no_zero_divide_pairs.keep_if { |pair| pair[1] != 0 }
 
 red_operators = [
-    RedFunc2ParamsMethod.new('add', 'add256', :+, test_pairs),
-    RedFunc2ParamsMethod.new('subtract', 'sub256', :-, test_pairs),
-    RedFunc2ParamsMethod.new('multiply', 'mul256', :*, test_pairs),
-    RedFunc2ParamsMethod.new('divide', 'div256', :/, no_zero_divide_pairs),
-    RedFunc2ParamsMethod.new('modulo', 'mod256', :%, no_zero_divide_pairs),
-    RedComparisonMethod.new('lesser or equal', 'lesser-or-equal256?', :<=, test_pairs)
+    RedFunc2Params.new('add', 'add256', :+.to_proc, test_pairs),
+    RedFunc2Params.new('subtract', 'sub256', :-.to_proc, test_pairs),
+    RedFunc2Params.new('multiply', 'mul256', :*.to_proc, test_pairs),
+    RedFunc2Params.new('divide', 'div256', :/.to_proc, no_zero_divide_pairs),
+    RedFunc2Params.new('modulo', 'mod256', :%.to_proc, no_zero_divide_pairs),
+    RedComparison.new('lesser or equal', 'lesser-or-equal256?', :<=.to_proc, test_pairs)
 ]
 
 RedTest.start_file "uint256-generated"

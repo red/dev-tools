@@ -16,7 +16,7 @@ encode = lambda do |value|
 end
 
 rlp_tests = [
-    RedFunc1ParamLambda.new('encode', 'rlp/encode', encode, encode_test_data)
+    RedFunc1Param.new('encode', 'rlp/encode', encode, encode_test_data)
 ]
 
 RedTest.start_file 'rlp-generated'

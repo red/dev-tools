@@ -79,21 +79,22 @@ end
 
 class RedFunc < RedTest
     
-    attr_reader :red_fn
+    attr_reader :red_fn, :ruby_proc
     
-    def initialize title, red_fn
+    def initialize title, red_fn, ruby_proc
         super title
         @red_fn = red_fn
+        @ruby_proc = ruby_proc
     end    
     
 end
 
-class RedFunc1ParamLambda < RedFunc
+class RedFunc1Param < RedFunc
 
-    attr_reader :test_list, :ruby_proc
+    attr_reader :test_list
 
     def initialize title, red_fn, ruby_proc, test_list
-        super title, red_fn
+        super title, red_fn, ruby_proc
         @test_list = test_list
         @ruby_proc = ruby_proc
     end
@@ -119,18 +120,17 @@ class RedFunc1ParamLambda < RedFunc
 
 end
 
-class RedFunc2ParamsMethod < RedFunc
+class RedFunc2Params < RedFunc
     
-    attr_reader :test_pairs, :ruby_method
+    attr_reader :test_pairs
     
-    def initialize title, red_fn, ruby_method, test_pairs
-        super title, red_fn
+    def initialize title, red_fn, ruby_proc, test_pairs
+        super title, red_fn, ruby_proc
         @test_pairs = test_pairs
-        @ruby_method = ruby_method
     end
     
     def calc_expected x, y
-        x.send self.ruby_method, y
+        self.ruby_proc.call x, y
     end
     
     def generate_test x, y
@@ -153,7 +153,7 @@ class RedFunc2ParamsMethod < RedFunc
 
 end
 
-class RedComparisonMethod < RedFunc2ParamsMethod
+class RedComparison < RedFunc2Params
     
     def generate_test x, y
         self.generate_test_name
