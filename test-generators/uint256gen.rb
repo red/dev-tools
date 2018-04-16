@@ -1,5 +1,7 @@
 require_relative 'lib/red-test'
 
+##  Add random seed ##
+
 ZERO = 0
 ONE = 1
 TWO = 2
@@ -9,6 +11,7 @@ MAX_BIG = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 NUM_SMALL_SAMPLES = 10
 NUM_BIG_SAMPLES = 10
 single_values = [MIN_BIG, ZERO, ONE, TWO, MAX_BIG]
+srand 1
 NUM_SMALL_SAMPLES.times { |i| single_values << rand(MAX_SMALL) }
 NUM_BIG_SAMPLES.times { |i| single_values << rand(MAX_BIG) }
 test_pairs = single_values.permutation(2).to_a
