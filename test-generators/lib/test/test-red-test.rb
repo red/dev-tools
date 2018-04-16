@@ -64,32 +64,18 @@ describe RedTest do
   end
   
   describe 'RedTest Class methods' do
-    before do
-      RedTest.test_file = ''
-    end
-    after do
-      RedTest.test_file = ''
-    end
-    describe :add_to_test do
-      it 'should add a string followed by new line to RedTest.testfile' do
-        RedTest.add_to_test 'string'
-        RedTest.test_file.must_equal "string\n"
-      end
-    end
     describe :start_file do  
       it 'should create test header and start-file' do
         expected = "Red []\n" +
                    ";#include  %../../../quick-test/quick-test.red\n" +
                    '~~~start-file~~~ "test one"'  + "\n\n"
-        RedTest.start_file 'test one'
-        RedTest.test_file.must_equal expected
+        RedTest.start_file('test one').must_equal expected
       end
     end
     describe :end_file do
       it 'should create end-file and return the test file' do
         expected = "~~~end-file~~~\n"
-        RedTest.end_file
-        RedTest.test_file.must_equal expected
+        RedTest.end_file.must_equal expected
       end
     end
   end
@@ -97,11 +83,9 @@ describe RedTest do
   describe RedTest do
     before do
       @rt = RedTest.new 'unit_test'
-      RedTest.test_file = ''
     end
     after do
       @rt = nil
-      RedTest.test_file = ''
     end
     describe :new do
       it 'should set test count to 0' do
@@ -112,36 +96,29 @@ describe RedTest do
       end
     end
     describe :end_group do
-      it 'should add end group to a test file' do
-        @rt.end_group
-        RedTest.test_file.must_equal "===end-group===\n\n"
+      it 'should return an end group' do
+        @rt.end_group.must_equal "===end-group===\n\n"
       end
     end
     describe :generate_test_name do
-      it 'should increment test count and add a test header' do
-        @rt.generate_test_name
-        RedTest.test_file.must_equal "\t--test-- " + '"unit_test-1"' + "\n"
+      it 'should increment test count and produce a test header' do
+        @rt.generate_test_name.must_equal "\t--test-- " + '"unit_test-1"' + "\n"
       end
     end
     describe :set_word do
       it 'should generate code to set a word to a Red value' do
-        @rt.set_word 'x', 1
-        RedTest.test_file.must_equal "\t\tx: 1\n"
+        @rt.set_word('x', 1).must_equal "\t\tx: 1\n"
       end
       it 'should optionally convert a value' do
-        @rt.set_word 'y', 1, :to_red_i256
-        RedTest.test_file.must_equal "\t\t" + 'y: to-i256 #{01}' + "\n"
+        @rt.set_word('y', 1, :to_red_i256).must_equal "\t\t" + 'y: to-i256 #{01}' + "\n"
       end
     end
     describe :start_group do
-      it 'should add a group header' do
-        @rt.start_group 
-        RedTest.test_file.must_equal '===start-group=== "unit_test"' + "\n"
+      it 'should produce a group header' do
+        @rt.start_group.must_equal '===start-group=== "unit_test"' + "\n"
       end
     end
 
-    
-    
   end
   
 end 

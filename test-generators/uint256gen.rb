@@ -27,7 +27,7 @@ red_operators = [
     RedComparison.new('lesser or equal', 'lesser-or-equal256?', :<=.to_proc, test_pairs)
 ]
 
-RedTest.start_file "uint256-generated"
-red_operators.each { |red_op| red_op.generate_test_group }
-RedTest.end_file
-puts RedTest.test_file
+test_file = RedTest.start_file "uint256-generated"
+red_operators.each { |red_op| test_file += red_op.generate_test_group }
+test_file += RedTest.end_file
+puts test_file

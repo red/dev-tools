@@ -19,7 +19,7 @@ rlp_tests = [
     RedFunc1Param.new('encode', 'rlp/encode', encode, encode_test_data)
 ]
 
-RedTest.start_file 'rlp-generated'
-rlp_tests.each { |rlp_test| rlp_test.generate_test_group }
-RedTest.end_file
-puts RedTest.test_file
+test_file = RedTest.start_file 'rlp-generated'
+rlp_tests.each { |rlp_test| test_file += rlp_test.generate_test_group }
+test_file += RedTest.end_file
+puts test_file
