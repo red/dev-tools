@@ -37,17 +37,17 @@ class RedTest
     end
     
     def self.end_file
-        self.puts "~~~end-file~~~"
+        self.add_to_test "~~~end-file~~~"
     end
     
-    def self.puts line
+    def self.add_to_test line
         self.test_file << line + "\n"
     end
     
     def self.start_file file_title
-        self.puts 'Red []'
-        self.puts ';#include  %../../../quick-test/quick-test.red'
-        self.puts '~~~start-file~~~ "' + file_title + '"' + "\n"
+        self.add_to_test 'Red []'
+        self.add_to_test ';#include  %../../../quick-test/quick-test.red'
+        self.add_to_test '~~~start-file~~~ "' + file_title + '"' + "\n"
     end
     
     attr_reader :title
@@ -59,20 +59,21 @@ class RedTest
     end
     
     def end_group
-        RedTest.puts "===end-group===\n"
+        RedTest.add_to_test "===end-group===\n"
     end
     
     def generate_test_name
         self.test_num += 1
-        RedTest.puts "\t" + '--test-- "' + self.title  + '-' + self.test_num.to_s + '"'
+        RedTest.add_to_test "\t" + '--test-- "' + self.title  + '-' + self.test_num.to_s + '"'
     end
     
     def set_word word, value, method=:to_red
-        RedTest.puts "\t\t" + word + ': ' + value.send(method)
+        RedTest.add_to_test "\t\t" + word + ': ' + value.send(method)
     end 
 
     def start_group 
-        RedTest.puts '===start-group=== "' + self.title + '"'
+        RedTest.add_to_test '===start-group=== "' + self.title + '"'
+        @test_num = 0
     end
 
 end
@@ -85,6 +86,10 @@ class RedFunc < RedTest
         super title
         @red_fn = red_fn
         @ruby_proc = ruby_proc
+    end
+    
+    def calc_expected x, y
+        self.ruby_proc.call x, y
     end    
     
 end
@@ -99,21 +104,16 @@ class RedFunc1Param < RedFunc
         @ruby_proc = ruby_proc
     end
     
-    def calc_expected x
-        self.ruby_proc.call x
-    end
-    
     def generate_test x
         y = self.calc_expected x
         self.generate_test_name
         self.set_word 'x', x
         self.set_word 'y', y, :to_s
-        RedTest.puts "\t\t--assert y = " + self.red_fn + " x\n"
+        RedTest.add_to_test "\t\t--assert y = " + self.red_fn + " x\n"
     end
     
     def generate_test_group
         self.start_group
-        self.test_num = 0
         y = self.test_list.each { |x| self.generate_test x}
         self.end_group
     end
@@ -129,10 +129,6 @@ class RedFunc2Params < RedFunc
         @test_pairs = test_pairs
     end
     
-    def calc_expected x, y
-        self.ruby_proc.call x, y
-    end
-    
     def generate_test x, y
         z = self.calc_expected x, y
         if MIN_BIG < z and z < MAX_BIG then
@@ -140,13 +136,12 @@ class RedFunc2Params < RedFunc
             self.set_word 'x', x, :to_red_i256
             self.set_word 'y', y, :to_red_i256
             self.set_word 'z', z, :to_red_i256
-            RedTest.puts "\t\t" + '--assert z  = ' + self.red_fn + ' x  y' + "\n"
+            RedTest.add_to_test "\t\t" + '--assert z  = ' + self.red_fn + ' x  y' + "\n"
         end
     end
     
     def generate_test_group
         self.start_group
-        self.test_num = 0
         self.test_pairs.each { |x, y| self.generate_test x, y }
         self.end_group
     end
@@ -161,7 +156,7 @@ class RedComparison < RedFunc2Params
         self.set_word 'x', x, :to_red_i256
         self.set_word 'y', y, :to_red_i256
         self.set_word 'z', z
-        RedTest.puts "\t\t" + '--assert z  = ' + self.red_fn + ' x  y' + "\n"
+        RedTest.add_to_test "\t\t" + '--assert z  = ' + self.red_fn + ' x  y' + "\n"
     end
     
 end

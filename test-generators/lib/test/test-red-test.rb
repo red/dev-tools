@@ -70,9 +70,9 @@ describe RedTest do
     after do
       RedTest.test_file = ''
     end
-    describe :puts do
+    describe :add_to_test do
       it 'should add a string followed by new line to RedTest.testfile' do
-        RedTest.puts 'string'
+        RedTest.add_to_test 'string'
         RedTest.test_file.must_equal "string\n"
       end
     end
