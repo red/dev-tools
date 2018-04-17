@@ -1,7 +1,5 @@
 require_relative 'lib/red-test'
 
-##  Add random seed ##
-
 ZERO = 0
 ONE = 1
 TWO = 2
@@ -18,16 +16,43 @@ test_pairs = single_values.permutation(2).to_a
 no_zero_divide_pairs = test_pairs.clone
 no_zero_divide_pairs.keep_if { |pair| pair[1] != 0 }
 
-red_operators = [
-    RedFunc2Params.new('add', 'add256', :+.to_proc, test_pairs),
-    RedFunc2Params.new('subtract', 'sub256', :-.to_proc, test_pairs),
-    RedFunc2Params.new('multiply', 'mul256', :*.to_proc, test_pairs),
-    RedFunc2Params.new('divide', 'div256', :/.to_proc, no_zero_divide_pairs),
-    RedFunc2Params.new('modulo', 'mod256', :%.to_proc, no_zero_divide_pairs),
-    RedComparison.new('lesser or equal', 'lesser-or-equal256?', :<=.to_proc, test_pairs)
+includes = [
+    '#include %../../red/quick-test/quick-test.red',
+    '#include %../libs/int256.red'
 ]
 
-test_file = RedTest.start_file "uint256-generated"
-red_operators.each { |red_op| test_file += red_op.generate_test_group }
-test_file += RedTest.end_file
-puts test_file
+gen_test = lambda do |context, x, y| 
+    z = context.calc_expected x, y
+    test = context.generate_test_name +
+           context.set_word('x', x, :to_red_i256) +
+           context.set_word('y', y, :to_red_i256)
+    if MIN_BIG < z and z < MAX_BIG then
+        test += context.set_word('z', z, :to_red_i256) +
+                "\t\t" + '--assert z  = ' + context.red_fn + ' x  y' + "\n\n"
+    else
+        test += "\t\t" + '--assert error? try [ ' + context.red_fn + ' x  y ]' + "\n\n"
+    end
+end
+
+gen_comp_test = lambda do |context, x, y|
+    z = context.calc_expected x, y
+    context.generate_test_name +
+    context.set_word('x', x, :to_red_i256) +
+    context.set_word('y', y, :to_red_i256) +
+    context.set_word('z', z) +
+    "\t\t" + '--assert z  = ' + context.red_fn + ' x  y' + "\n\n"
+end
+
+red_operators = [
+    RedFunc2Params.new('add', 'add256', :+.to_proc, gen_test, test_pairs),
+    RedFunc2Params.new('subtract', 'sub256', :-.to_proc, gen_test, test_pairs),
+    RedFunc2Params.new('multiply', 'mul256', :*.to_proc, gen_test, test_pairs),
+    RedFunc2Params.new('divide', 'div256', :/.to_proc, gen_test, no_zero_divide_pairs),
+    RedFunc2Params.new('modulo', 'mod256', :%.to_proc, gen_test, no_zero_divide_pairs),
+    RedFunc2Params.new('lesser or equal', 'lesser-or-equal256?', :<=.to_proc, 
+                      gen_comp_test, test_pairs)
+]
+
+puts RedTest.start_file "uint256-generated", includes
+red_operators.each { |red_op| puts red_op.generate_test_group }
+puts RedTest.end_file

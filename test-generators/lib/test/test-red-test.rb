@@ -11,14 +11,6 @@ describe RedTest do
     end
   end
   
-  describe String do
-    describe :to_red do
-      it 'should return a copy of the string enclose in quotes' do
-        'name'.to_red.must_equal '"name"'
-      end
-    end
-  end
-  
   describe Integer do
     describe :to_red do
       it 'should return an integer string literal' do
@@ -47,29 +39,42 @@ describe RedTest do
     end
   end
   
-  describe true do
+  describe Object do
     describe :to_red do
-      it 'should return Red Word true' do
+      it 'should return Red Word false for false' do
+        false.to_red.must_equal 'false'
+      end
+      it 'should return Red Word truwefor true' do
         true.to_red.must_equal 'true'
       end  
     end
-  end
-  
-  describe false do
-    describe :to_red do
-      it 'should return Red Word false' do
-        false.to_red.must_equal 'false'
-      end  
+    describe :unchanged do
+      it 'should return itself' do
+        itself = 1
+        itself.unchanged.must_equal 1
+      end
     end
   end
   
+  describe String do
+    describe :to_red do
+      it 'should return a copy of the string enclose in quotes' do
+        'name'.to_red.must_equal '"name"'
+      end
+      it 'should escape " within a string' do
+        ' "Red" '.to_red.must_equal '" ^"Red^" "'
+      end
+    end
+  end
+  
+    
   describe 'RedTest Class methods' do
     describe :start_file do  
       it 'should create test header and start-file' do
-        expected = "Red []\n" +
-                   ";#include  %../../../quick-test/quick-test.red\n" +
+        expected = "Red []\n\n" +
+                   "a\n" + "b\n" + "c\n\n"+
                    '~~~start-file~~~ "test one"'  + "\n\n"
-        RedTest.start_file('test one').must_equal expected
+        RedTest.start_file('test one', ['a', 'b', 'c']).must_equal expected
       end
     end
     describe :end_file do
@@ -118,7 +123,6 @@ describe RedTest do
         @rt.start_group.must_equal '===start-group=== "unit_test"' + "\n"
       end
     end
-
   end
   
 end 

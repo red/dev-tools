@@ -1,3 +1,13 @@
+# A set of classes and refinements that allow easy generation of Red test files
+#
+# Author: Peter W A Wood
+#
+# Copyright © 2018 Red Foundation
+#
+# Licence: BSD-3 - https://github.com/red/red/blob/origin/BSD-3-License.txt
+#
+# Version: 1.0.0
+
 module RedValues
     
     refine Integer do
@@ -16,11 +26,15 @@ module RedValues
         def to_red
             self.to_s
         end
+        
+        def unchanged
+            self
+        end
     end
     
     refine String do
         def to_red
-            '"' + self.to_s + '"'
+            '"' + self.to_s.gsub('"', '^"') + '"'
         end
     end
                
@@ -39,10 +53,10 @@ class RedTest
         "~~~end-file~~~\n"
     end
     
-    def self.start_file file_title
-        'Red []' + "\n" +
-        ';#include  %../../../quick-test/quick-test.red' + "\n" +
-        '~~~start-file~~~ "' + file_title + '"' + "\n\n"
+    def self.start_file file_title, includes
+        header = 'Red []' + "\n\n"
+        includes.each { |include| header += include + "\n" }
+        header += "\n" + '~~~start-file~~~ "' + file_title + '"' + "\n\n"
     end
     
     attr_reader :title
@@ -75,12 +89,21 @@ end
 
 class RedFunc < RedTest
     
-    attr_reader :red_fn, :ruby_proc
+    attr_reader :red_fn, :ruby_proc, :test_proc
     
-    def initialize title, red_fn, ruby_proc
+    def initialize title, red_fn, ruby_proc, test_proc
         super title
         @red_fn = red_fn
         @ruby_proc = ruby_proc
+        @test_proc = test_proc
+    end
+    
+    def calc_expected *args
+        self.ruby_proc.call *args
+    end
+    
+    def generate_test *args
+        self.test_proc.call self, *args
     end
         
 end
@@ -89,22 +112,9 @@ class RedFunc1Param < RedFunc
 
     attr_reader :test_list
 
-    def initialize title, red_fn, ruby_proc, test_list
-        super title, red_fn, ruby_proc
+    def initialize title, red_fn, ruby_proc, test_proc, test_list
+        super title, red_fn, ruby_proc, test_proc
         @test_list = test_list
-        @ruby_proc = ruby_proc
-    end
-    
-    def calc_expected x
-        self.ruby_proc.call x
-    end    
-
-    def generate_test x
-        y = self.calc_expected x
-        self.generate_test_name +
-        self.set_word('x', x) +
-        self.set_word('y', y, :to_s) +
-        "\t\t--assert y = " + self.red_fn + " x\n\n"
     end
     
     def generate_test_group
@@ -119,47 +129,15 @@ class RedFunc2Params < RedFunc
     
     attr_reader :test_pairs
     
-    def initialize title, red_fn, ruby_proc, test_pairs
-        super title, red_fn, ruby_proc
+    def initialize title, red_fn, ruby_proc, test_proc, test_pairs
+        super title, red_fn, ruby_proc, test_proc
         @test_pairs = test_pairs
-    end
-    
-    def calc_expected x, y
-        self.ruby_proc.call x, y
-    end    
-    
-    def generate_test x, y
-        z = self.calc_expected x, y
-        if MIN_BIG < z and z < MAX_BIG then
-            result = self.generate_test_name +
-            self.set_word('x', x, :to_red_i256) +
-            self.set_word('y', y, :to_red_i256) +
-            self.set_word('z', z, :to_red_i256) +
-            "\t\t" + '--assert z  = ' + self.red_fn + ' x  y' + "\n\n"
-        end
-        result
     end
     
     def generate_test_group
         test_group = self.start_group
-        self.test_pairs.each do |x, y|
-          result = self.generate_test x, y 
-          test_group += result if result
-        end
+        self.test_pairs.each { |x, y| test_group += self.generate_test x, y }
         test_group += self.end_group
     end
 
-end
-
-class RedComparison < RedFunc2Params
-    
-    def generate_test x, y
-        z = self.calc_expected x, y
-        self.generate_test_name +
-        self.set_word('x', x, :to_red_i256) +
-        self.set_word('y', y, :to_red_i256) +
-        self.set_word('z', z) +
-        "\t\t" + '--assert z  = ' + self.red_fn + ' x  y' + "\n\n"
-    end
-    
 end
