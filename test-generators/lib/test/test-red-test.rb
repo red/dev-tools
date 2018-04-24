@@ -125,4 +125,70 @@ describe RedTest do
     end
   end
   
+  describe RedFunc do
+    after do
+      @rt = nil
+    end
+    describe :calc_expected do
+      it 'should call a proc with one argument' do
+        @rt = RedFunc.new 'calc_expected', 'red_func', :next.to_proc, nil
+        @rt.calc_expected(1).must_equal 2
+      end
+      it 'should call a proc with two arguments' do
+        @rt = RedFunc.new 'calc_expected', '+', :+.to_proc, nil
+        @rt.calc_expected(1, 2).must_equal 3
+      end
+    end
+    describe :generate_test do
+      it 'should supply a proc with a context' do
+        lam = lambda { |context| context.title } 
+        @rt = RedFunc.new 'generate_test', 'red_func', :+.to_proc, lam
+        @rt.generate_test.must_equal 'generate_test' 
+      end
+      it 'should pass 1 argument to the proc' do
+        lam = lambda { |context, i| i } 
+        @rt = RedFunc.new 'generate_test', 'red_func', :+.to_proc, lam
+        @rt.generate_test(1).must_equal 1 
+      end
+      it 'should supply 2 arguments to a proc' do
+        lam = lambda { |context, i, j| i + j } 
+        @rt = RedFunc.new 'generate_test', 'red_func', :+.to_proc, lam
+        @rt.generate_test(2, 3).must_equal 5 
+      end      
+    end
+  end
+  
+  describe RedFunc1Param do
+    describe :generate_test_group do
+      after do
+        @rf1p = nil
+      end
+      it 'should generate group start, some test and group end' do
+        test_lam = lambda { |context, i| "test for #{i}" }        
+        exp = '===start-group=== "RF1Ptest"' + "\n" +
+              'test for 1' + 'test for 10' +
+              "===end-group===\n\n"
+        @rf1p = RedFunc1Param.new 'RF1Ptest', 'next', :next.to_proc, test_lam, [1, 10]
+        @rf1p.generate_test_group.must_equal exp
+      end
+    end    
+  end
+  
+  describe RedFunc2Params do
+    describe :generate_test_group do
+      after do
+        @rf1p = nil
+      end
+      it 'should generate group start, some test and group end' do
+        test_lam = lambda { |context, i, j| "test for #{i + j}" }        
+        exp = '===start-group=== "RF1Ptest"' + "\n" +
+              'test for 11' + 'test for 22' +
+              "===end-group===\n\n"
+        @rf1p = RedFunc2Params.new 'RF1Ptest', 'next', :next.to_proc, test_lam, 
+                                  [[1, 10], [2, 20]]
+        @rf1p.generate_test_group.must_equal exp
+      end
+    end    
+  end
+    
 end 

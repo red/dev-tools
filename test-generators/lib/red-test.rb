@@ -99,11 +99,11 @@ class RedFunc < RedTest
     end
     
     def calc_expected *args
-        self.ruby_proc.call *args
+        self.ruby_proc.call(*args)
     end
     
     def generate_test *args
-        self.test_proc.call self, *args
+        self.test_proc.call(self, *args)
     end
         
 end
