@@ -26,7 +26,7 @@ gen_test = lambda do |context, x, y|
     test = context.generate_test_name +
            context.set_word('x', x, :to_red_i256) +
            context.set_word('y', y, :to_red_i256)
-    if MIN_BIG < z and z < MAX_BIG then
+    if MIN_BIG <= z and z <= MAX_BIG then
         test += context.set_word('z', z, :to_red_i256) +
                 "\t\t" + '--assert z  = ' + context.red_fn + ' x  y' + "\n\n"
     else
