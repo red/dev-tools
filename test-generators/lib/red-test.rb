@@ -44,11 +44,6 @@ using RedValues
 
 class RedTest
 
-    @test_file = ''
-    class << self
-        attr_accessor :test_file
-    end
-    
     def self.end_file
         "~~~end-file~~~\n"
     end
