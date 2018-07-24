@@ -38,18 +38,16 @@ gen_test_to_i256 = lambda do |context, x|
     test = context.generate_test_name +
            context.set_word('x', x, :to_red_i256) +
            context.set_word('y', x.to_f) +
-           "\t\t" + '--assert (' + context.red_fn + " x  to-i256 y) \n" +
-           "\t\t and (" + context.red_fn + " to-i256 y x) \n\n"
+           "\t\t--assert (lesser-or-equal256? x to-i256 y) " +
+           "and (lesser-or-equal256? to-i256 y x) \n\n"
 end
 
 gen_test_from_i256 = lambda do |context, x| 
     test = context.generate_test_name +
            context.set_word('x', x, :to_red_i256) +
            context.set_word('y', x.to_f) +
-           "\t\t" + '--assert ' + context.red_fn + " i256-to-float x y \n\n"
+           "\t\t--assert equal? i256-to-float x y \n\n"
 end
-
-
 
 gen_comp_test = lambda do |context, x, y|
     z = context.calc_expected x, y
@@ -68,9 +66,9 @@ red_operators = [
     RedFunc2Params.new('modulo', 'mod256', :%.to_proc, gen_test, no_zero_divide_pairs),
     RedFunc2Params.new('lesser or equal', 'lesser-or-equal256?', :<=.to_proc, 
                       gen_comp_test, test_pairs),
-    RedFunc1Param.new('to-i256', 'lesser-or-equal256?', nil, gen_test_to_i256,
+    RedFunc1Param.new('to-i256', nil, nil, gen_test_to_i256,
                       single_values),
-    RedFunc1Param.new('i256-to-float', 'strict-equal?', nil, gen_test_from_i256,
+    RedFunc1Param.new('i256-to-float', nil, nil, gen_test_from_i256,
                       single_values)
 ]
 
