@@ -28,15 +28,15 @@ gen_test = lambda do |context, x, y|
            context.set_word('x', x, :to_red_money) +
            context.set_word('y', y, :to_red_money)
     if z.infinite? then
-      return test + "\t\t" + '--assert z = $inf' if z < 0
-      return test + "\t\t" + '--assert z = $inf'
+      return test + "\t\t" + "--assert z = $inf\n\n" if z < 0
+      return test + "\t\t" + "--assert z = $inf"
     end
     if MIN <= z and z <= MAX then         
         return test + context.set_word('z', z, :to_red_money) +
                 "\t\t" + '--assert z  = (x ' + context.red_fn + ' y)' + "\n\n"
     end
-    return test + "\t\t" + '--assert z = $0.00' if MIN < z
-    return test + "\t\t" + '--assert z = $inf' 
+    return test + "\t\t" + "--assert z = $0.00\n\n" if MIN < z
+    return test + "\t\t" + "--assert z = $inf\n\n"
 end
 
 gen_comp_test = lambda do |context, x, y|
