@@ -28,20 +28,20 @@ describe RedTest do
         bd.to_red_money.must_equal "-$720575940379279350000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0"
       end
       it 'should convert infinity to nan' do
-        BigDecimal('Infinity').to_red_money.must_equal '$nan'
+        BigDecimal('Infinity').to_red_money.must_equal '$NaN'
       end
       it 'should convert +infinity to nan' do
-        BigDecimal('+Infinity').to_red_money.must_equal '$nan'
+        BigDecimal('+Infinity').to_red_money.must_equal '$NaN'
       end
       it 'should convert infinity to nan' do
-        BigDecimal('-Infinity').to_red_money.must_equal '$nan'
+        BigDecimal('-Infinity').to_red_money.must_equal '$NaN'
       end
       it 'should handle nan' do
-        BigDecimal('NaN').to_red_money.must_equal '$nan'
+        BigDecimal('NaN').to_red_money.must_equal '$NaN'
       end
       it 'should return nan for too big numbers' do
         bd = BigDecimal(1) * 1e256
-        bd.to_red_money.must_equal '$nan'
+        bd.to_red_money.must_equal '$NaN'
       end
       it 'should return $0.0 for too small numbers' do
         bd = BigDecimal(1) * 1e-256

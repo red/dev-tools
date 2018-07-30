@@ -17,7 +17,7 @@ module RedValues
 
     refine BigDecimal do
       def to_red_money
-        return '$nan' if self.infinite? or self.nan? or self > MAX_MONEY
+        return '$NaN' if self.infinite? or self.nan? or self > MAX_MONEY
         return '$0.0' if self.abs < MIN_MONEY
         if self < 0 then
           '-$' + self.abs().to_s('F')  
@@ -25,7 +25,12 @@ module RedValues
           '$' + self.to_s('F')
         end
       end
+      
+      def to_to_red_money 
+        'to money! "' + self.to_s('F') + '"'
+      end      
     end
+    
     
     refine Integer do
         def to_red_binary

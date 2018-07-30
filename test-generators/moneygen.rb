@@ -26,17 +26,17 @@ includes = [
 gen_test = lambda do |context, x, y| 
     z = context.calc_expected x, y
     test = context.generate_test_name +
-           context.set_word('x', x, :to_red_money) +
-           context.set_word('y', y, :to_red_money) +
-           context.set_word('z', z, :to_red_money) +
+           context.set_word('x', x, :to_to_red_money) +
+           context.set_word('y', y, :to_to_red_money) +
+           context.set_word('z', z, :to_to_red_money) +
            "\t\t" + '--assert z  = (x ' + context.red_fn + ' y)' + "\n\n"
 end
 
 gen_comp_test = lambda do |context, x, y|
     z = context.calc_expected x, y
     context.generate_test_name +
-    context.set_word('x', x, :to_red_money) +
-    context.set_word('y', y, :to_red_money) +
+    context.set_word('x', x, :to_to_red_money) +
+    context.set_word('y', y, :to_to_red_money) +
     context.set_word('z', z) +
     "\t\t" + '--assert z  =  (x ' + context.red_fn + ' y)' + "\n\n"
 end
