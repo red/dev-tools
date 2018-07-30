@@ -11,10 +11,14 @@
 require 'bigdecimal'
 
 module RedValues
+    TEN = BigDecimal 10
+    MAX_MONEY = BigDecimal(0x00FFFFFFFFFFFFFF) * (TEN ** BigDecimal(127))
+    MIN_MONEY = BigDecimal(1) * (TEN ** BigDecimal(-127))
 
     refine BigDecimal do
       def to_red_money
-        return '$nan' if self.infinite? or self.nan?
+        return '$nan' if self.infinite? or self.nan? or self > MAX_MONEY
+        return '$0.0' if self.abs < MIN_MONEY
         if self < 0 then
           '-$' + self.abs().to_s('F')  
         else

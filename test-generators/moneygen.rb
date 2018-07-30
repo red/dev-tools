@@ -4,13 +4,14 @@ require_relative 'lib/red-test'
 ZERO = BigDecimal 0
 ONE = BigDecimal 1
 TWO = BigDecimal 2
+TEN = BigDecimal 10
 MINUS_ONE = BigDecimal -1
 MIN_COEFFICIENT = ZERO
 MAX_COEFFICIENT = BigDecimal 0x00FFFFFFFFFFFFFF
 MIN_EXPONENT = BigDecimal -127
 MAX_EXPONENT = BigDecimal 127
-MIN = MAX_COEFFICIENT * MIN_EXPONENT
-MAX = MAX_COEFFICIENT * MAX_EXPONENT
+MIN = MAX_COEFFICIENT * (TEN ** MIN_EXPONENT)
+MAX = MAX_COEFFICIENT * (TEN ** MAX_EXPONENT)
 NUM_SAMPLES = 10
 single_values = [MIN, ZERO, ONE, TWO, MINUS_ONE, MAX]
 srand 1
@@ -26,17 +27,9 @@ gen_test = lambda do |context, x, y|
     z = context.calc_expected x, y
     test = context.generate_test_name +
            context.set_word('x', x, :to_red_money) +
-           context.set_word('y', y, :to_red_money)
-    if z.infinite? then
-      return test + "\t\t" + "--assert z = $inf\n\n" if z < 0
-      return test + "\t\t" + "--assert z = $inf"
-    end
-    if MIN <= z and z <= MAX then         
-        return test + context.set_word('z', z, :to_red_money) +
-                "\t\t" + '--assert z  = (x ' + context.red_fn + ' y)' + "\n\n"
-    end
-    return test + "\t\t" + "--assert z = $0.00\n\n" if MIN < z
-    return test + "\t\t" + "--assert z = $inf\n\n"
+           context.set_word('y', y, :to_red_money) +
+           context.set_word('z', z, :to_red_money) +
+           "\t\t" + '--assert z  = (x ' + context.red_fn + ' y)' + "\n\n"
 end
 
 gen_comp_test = lambda do |context, x, y|

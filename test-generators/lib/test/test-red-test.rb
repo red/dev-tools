@@ -39,6 +39,14 @@ describe RedTest do
       it 'should handle nan' do
         BigDecimal('NaN').to_red_money.must_equal '$nan'
       end
+      it 'should return nan for too big numbers' do
+        bd = BigDecimal(1) * 1e256
+        bd.to_red_money.must_equal '$nan'
+      end
+      it 'should return $0.0 for too small numbers' do
+        bd = BigDecimal(1) * 1e-256
+        bd.to_red_money.must_equal '$0.0'
+      end
     end
   end
   
