@@ -8,7 +8,20 @@
 #
 # Version: 1.0.0
 
+require 'bigdecimal'
+
 module RedValues
+
+    refine BigDecimal do
+      def to_red_money
+        return '$nan' if self.infinite? or self.nan?
+        if self < 0 then
+          '-$' + self.abs().to_s('F')  
+        else
+          '$' + self.to_s('F')
+        end
+      end
+    end
     
     refine Integer do
         def to_red_binary

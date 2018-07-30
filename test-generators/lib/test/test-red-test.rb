@@ -11,6 +11,37 @@ describe RedTest do
     end
   end
   
+  describe BigDecimal do
+    describe :to_red_money do
+      it 'should return a money string literal' do 
+        BigDecimal(0).to_red_money.must_equal '$0.0'
+      end
+      it 'should return a negative money string literal' do
+        BigDecimal(-1).to_red_money.must_equal '-$1.0'
+      end
+      it 'should handle max value' do
+        bd = BigDecimal(72057594037927935) * 1e127
+        BigDecimal(bd).to_red_money.must_equal "$720575940379279350000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0"
+      end
+      it 'should handle min value' do
+        bd = BigDecimal(72057594037927935) * -1e127
+        bd.to_red_money.must_equal "-$720575940379279350000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0"
+      end
+      it 'should convert infinity to nan' do
+        BigDecimal('Infinity').to_red_money.must_equal '$nan'
+      end
+      it 'should convert +infinity to nan' do
+        BigDecimal('+Infinity').to_red_money.must_equal '$nan'
+      end
+      it 'should convert infinity to nan' do
+        BigDecimal('-Infinity').to_red_money.must_equal '$nan'
+      end
+      it 'should handle nan' do
+        BigDecimal('NaN').to_red_money.must_equal '$nan'
+      end
+    end
+  end
+  
   describe Integer do
     describe :to_red do
       it 'should return an integer string literal' do
