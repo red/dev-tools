@@ -11,6 +11,7 @@
 require 'bigdecimal'
 
 module RedValues
+    
     TEN = BigDecimal 10
     MAX_MONEY = BigDecimal(0x00FFFFFFFFFFFFFF) * (TEN ** BigDecimal(127))
     MIN_MONEY = BigDecimal(1) * (TEN ** BigDecimal(-127))
@@ -26,8 +27,25 @@ module RedValues
         end
       end
       
-      def to_to_red_money 
-        'to money! "' + self.to_s('F') + '"'
+      def to_to_red_money
+        ns = []
+        s = self.round(17).to_s('F')
+        count = 0
+        non_zero_found = false
+        s.each_char do |c|
+          if c == '.' or c == '-' then
+            ns.push(c)
+          else
+            non_zero_found = true if c != '0'
+            count += 1 if non_zero_found
+            if count > 17 then
+              ns.push('0')
+            else
+              ns.push(c)
+            end
+          end
+        end
+        'to money! "' + ns.join + '"'
       end      
     end
     

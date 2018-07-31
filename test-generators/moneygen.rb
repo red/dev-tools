@@ -1,6 +1,7 @@
 require 'bigdecimal'
 require_relative 'lib/red-test'
 
+
 ZERO = BigDecimal 0
 ONE = BigDecimal 1
 TWO = BigDecimal 2
