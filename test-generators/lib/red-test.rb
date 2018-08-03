@@ -13,43 +13,67 @@ require 'bigdecimal'
 module RedValues
     
     TEN = BigDecimal 10
-    MAX_MONEY = BigDecimal(0x00FFFFFFFFFFFFFF) * (TEN ** BigDecimal(127))
+    MAX_17_DIGITS = 36028797018963967
+    MAX_MONEY = BigDecimal(36028797018963967) * (TEN ** BigDecimal(127))
     MIN_MONEY = BigDecimal(1) * (TEN ** BigDecimal(-127))
-
+    NEG_MAX_MONEY = -MAX_MONEY
+    
     refine BigDecimal do
-      def to_red_money
-        return '$NaN' if self.infinite? or self.nan? or self > MAX_MONEY
-        return '$0.0' if self.abs < MIN_MONEY
-        if self < 0 then
-          '-$' + self.abs().to_s('F')  
+      def to_dec64_string
+        return "NaN" if self > MAX_MONEY or
+                        self < NEG_MAX_MONEY or
+                        self.infinite? or
+                        self.nan?
+        return "0.0" if self.abs < MIN_MONEY
+        if self.split[1].slice(0,16).to_i.abs > MAX_17_DIGITS then
+          sig_digits = 16
         else
-          '$' + self.to_s('F')
+          sig_digits = 17
+        end
+        rounded = self.round(sig_digits - self.split[3])
+        s = rounded.to_s('F')
+        ns = []
+        count = 0
+        non_zero_found = false
+        no_dec_point_yet = true
+        s.each_char do |c|
+          if c == '.' or c == '-' then
+            ns.push c
+            no_dec_point_yet = false if c == '.'
+          else
+            non_zero_found = true if c > '0'
+            if non_zero_found and count < sig_digits then
+              ns.push c
+              count += 1
+            else
+              ns.push '0' if no_dec_point_yet or !non_zero_found or ns.last == '.'
+            end
+          end
+        end
+        ns.join        
+      end
+      
+      def to_red_money
+        s = self.to_dec64_string
+        if s[0] == "-" then
+          s.insert 1, '$' 
+        else
+          s.insert 0, '$'
         end
       end
       
       def to_to_red_money
-        ns = []
-        s = self.round(17).to_s('F')
-        count = 0
-        non_zero_found = false
-        s.each_char do |c|
-          if c == '.' or c == '-' then
-            ns.push(c)
-          else
-            non_zero_found = true if c != '0'
-            count += 1 if non_zero_found
-            if count > 17 then
-              ns.push('0')
-            else
-              ns.push(c)
-            end
-          end
+        s = self.to_dec64_string
+        if s == 'NaN' then
+          value = '9999999999999999999'
+        else
+          value = s
         end
-        'to money! "' + ns.join + '"'
-      end      
+        'to money! "' + value + '"' 
+      end
+            
     end
-    
-    
+       
     refine Integer do
         def to_red_binary
             bin_str = self.to_s(16).upcase
