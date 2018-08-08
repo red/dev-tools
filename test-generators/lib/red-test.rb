@@ -31,6 +31,7 @@ module RedValues
           sig_digits = 7
         end
         rounded = self.round(sig_digits - self.split[3])
+        return "NaN" if rounded.split[3].abs > 127
         s = rounded.to_s('F')
         ns = []
         count = 0
