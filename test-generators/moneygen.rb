@@ -8,11 +8,12 @@ TWO = BigDecimal 2
 TEN = BigDecimal 10
 MINUS_ONE = BigDecimal -1
 MIN_COEFFICIENT = ZERO
-MAX_COEFFICIENT = BigDecimal 36028797018963967
+MAX_POS_COEFFICIENT = BigDecimal 8388607
+MAX_NEG_COEFFICIENT = BigDecimal -8388608
 MIN_EXPONENT = BigDecimal -127
 MAX_EXPONENT = BigDecimal 127
-MIN = MAX_COEFFICIENT * (TEN ** MIN_EXPONENT)
-MAX = MAX_COEFFICIENT * (TEN ** MAX_EXPONENT)
+MIN = MAX_POS_COEFFICIENT * (TEN ** MIN_EXPONENT)
+MAX = MAX_NEG_COEFFICIENT * (TEN ** MAX_EXPONENT)
 NUM_SAMPLES = 10
 single_values = [MIN, ZERO, ONE, TWO, MINUS_ONE, MAX]
 srand 1
@@ -21,7 +22,7 @@ NUM_SAMPLES.times { |i| single_values << BigDecimal(-rand(MAX)) }
 test_pairs = single_values.permutation(2).to_a
 
 includes = [
-    '#include %../../,,/quick-test/quick-test.red'
+    '#include %../../../quick-test/quick-test.red'
 ]
 
 gen_test = lambda do |context, x, y| 
