@@ -14,11 +14,14 @@ MIN_EXPONENT = BigDecimal -127
 MAX_EXPONENT = BigDecimal 127
 MIN = MAX_POS_COEFFICIENT * (TEN ** MIN_EXPONENT)
 MAX = MAX_NEG_COEFFICIENT * (TEN ** MAX_EXPONENT)
-NUM_SAMPLES = 10
+NUM_SAMPLES = 20
 single_values = [MIN, ZERO, ONE, TWO, MINUS_ONE, MAX]
 srand 1
-NUM_SAMPLES.times { |i| single_values << BigDecimal(rand(MAX)) }
-NUM_SAMPLES.times { |i| single_values << BigDecimal(-rand(MAX)) }
+NUM_SAMPLES.times do |i|
+  coeff = rand(MAX_NEG_COEFFICIENT..MAX_POS_COEFFICIENT)
+  exp = rand(MIN_EXPONENT..MAX_EXPONENT)
+  single_values << coeff * (TEN ** exp)
+end
 test_pairs = single_values.permutation(2).to_a
 
 includes = [
