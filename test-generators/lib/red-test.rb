@@ -13,8 +13,8 @@ require 'bigdecimal'
 module RedValues
     
     TEN = BigDecimal 10
-    MAX_17_DIGITS = 36028797018963967
-    MAX_MONEY = BigDecimal(36028797018963967) * (TEN ** BigDecimal(127))
+    MAX_DIGITS = 8388607
+    MAX_MONEY = BigDecimal(8388607) * (TEN ** BigDecimal(127))
     MIN_MONEY = BigDecimal(1) * (TEN ** BigDecimal(-127))
     NEG_MAX_MONEY = -MAX_MONEY
     
@@ -25,10 +25,10 @@ module RedValues
                         self.infinite? or
                         self.nan?
         return "0.0" if self.abs < MIN_MONEY
-        if self.split[1].slice(0,16).to_i.abs > MAX_17_DIGITS then
-          sig_digits = 16
+        if self.split[1].slice(0,7).to_i.abs > MAX_DIGITS then
+          sig_digits = 6
         else
-          sig_digits = 17
+          sig_digits = 7
         end
         rounded = self.round(sig_digits - self.split[3])
         s = rounded.to_s('F')
