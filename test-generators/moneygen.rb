@@ -12,13 +12,25 @@ MAX_POS_COEFFICIENT = BigDecimal 8388607
 MAX_NEG_COEFFICIENT = BigDecimal -8388608
 MIN_EXPONENT = BigDecimal -127
 MAX_EXPONENT = BigDecimal 127
-MIN = MAX_POS_COEFFICIENT * (TEN ** MIN_EXPONENT)
-MAX = MAX_NEG_COEFFICIENT * (TEN ** MAX_EXPONENT)
+MAX_NEG = MAX_NEG_COEFFICIENT * (TEN ** MAX_EXPONENT)
+MAX_POS = MAX_POS_COEFFICIENT * (TEN ** MAX_EXPONENT)
+MIN = BigDecimal(1) * (TEN ** MIN_EXPONENT)
 NUM_SAMPLES = 20
-single_values = [MIN, ZERO, ONE, TWO, MINUS_ONE, MAX]
+single_values = [MAX_NEG, ZERO, MIN, ONE, TWO, MINUS_ONE, MAX_NEG]
 srand 1
 NUM_SAMPLES.times do |i|
   coeff = rand(MAX_NEG_COEFFICIENT..MAX_POS_COEFFICIENT)
+  if coeff < 0 then
+    max_coeff = 8388608
+  else
+    max_coeff = 8388607
+  end
+  if coeff.split[1].slice(0,7).to_i.abs > max_coeff then
+    sig_digits = 6
+  else
+    sig_digits = 7
+  end
+  coeff = coeff.round(sig_digits - coeff.split[3])
   exp = rand(MIN_EXPONENT..MAX_EXPONENT)
   single_values << coeff * (TEN ** exp)
 end
