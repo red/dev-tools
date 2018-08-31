@@ -19,23 +19,24 @@ module RedValues
     NEG_MAX_MONEY = BigDecimal(-8388608) * (TEN ** BigDecimal(127))
     
     refine BigDecimal do
-      def to_dec64_string
-        return "NaN" if self > MAX_MONEY or
-                        self < NEG_MAX_MONEY or
-                        self.infinite? or
+      def to_dec64_string     
+        return "NaN" if self.infinite? or
                         self.nan?
-        return "0.0" if self.abs < MIN_MONEY
         if self < 0 then
           max_coeff = 8388608
         else
           max_coeff = 8388607
         end
-        if self.split[1].to_i.abs > max_coeff then
+        if self.split[1].slice(0, 6).to_i.abs > max_coeff then
           sig_digits = 6
         else
           sig_digits = 7
         end
-        rounded = self.round(sig_digits - self.split[3])
+        num_digits = self.split[1].length
+        round_to = (self.split[3] - sig_digits) * -1
+        rounded = self.round(round_to)
+        return "NaN" if rounded > MAX_MONEY or rounded < NEG_MAX_MONEY
+        return "0.0" if rounded.abs < MIN_MONEY                
         return "NaN" if rounded.split[3].abs > 134
         s = rounded.to_s('F')
         ns = []

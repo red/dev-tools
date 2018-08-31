@@ -42,17 +42,6 @@ includes = [
 
 gen_test = lambda do |context, x, y| 
     z = context.calc_expected x, y
-    if z < 0 then
-      max_coeff = 8388608
-    else
-      max_coeff = 8388607
-    end
-    z_sig_digits = z.split[1]
-    z_num_sig_digits = z_sig_digits.length
-    if z_num_sig_digits > 7 or
-       (z_num_sig_digits == 7 and z_sig_digits.to_i > max_coeff) then
-      z = BigDecimal 'NaN'
-    end
     test = context.generate_test_name +
            context.set_word('x', x, :to_to_red_money) +
            context.set_word('y', y, :to_to_red_money) +

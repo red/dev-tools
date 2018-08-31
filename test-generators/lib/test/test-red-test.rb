@@ -23,19 +23,29 @@ describe RedTest do
       it 'should return "0.0" for 0.0' do
         BigDecimal(0).to_dec64_string.must_equal '0.0'
       end
-      it 'should return "123456789012345680.0" for 123456789012345678' do
-        BigDecimal(123456789012345678).to_dec64_string.must_equal "123456789012345680.0"
+    #  it 'should return "123456789012345680.0" for 123456789012345678' do
+    #    BigDecimal(123456789012345678).to_dec64_string.must_equal "123456789012345680.0"
+    #  end
+      it 'should return "1234567.0" for 1234567' do
+        BigDecimal(1234567).to_dec64_string.must_equal "1234567.0"
       end
-      it 'should return "0.012345678901234568" for 0.0123456789012345678' do
-        bd = BigDecimal(123456789012345678) / BigDecimal(10000000000000000000)
-        bd.to_dec64_string.must_equal "0.012345678901234568"
+    #  it 'should return "0.012345678901234568" for 0.0123456789012345678' do
+    #   bd = BigDecimal(123456789012345678) / BigDecimal(10000000000000000000)
+    #  bd.to_dec64_string.must_equal "0.012345678901234568"
+    #  end
+      it 'should return "0.01234567" for 0.01234567' do
+        bd = BigDecimal(1234567) / BigDecimal(100000000)
+        bd.to_dec64_string.must_equal "0.01234567"
       end
-      it 'should return "-123456789012345670.0" for -123456789012345678' do
-        BigDecimal(-123456789012345678).to_dec64_string.must_equal "-123456789012345680.0"
+    # it 'should return "-123456789012345670.0" for -123456789012345678' do
+    #    BigDecimal(-123456789012345678).to_dec64_string.must_equal "-123456789012345680.0"
+    #  end
+      it 'should return "-12345670.0" for -12345671' do
+        BigDecimal(-12345671).to_dec64_string.must_equal "-12345670.0"
       end
-      it 'should return "-0.012345678901234567" for -0.0123456789012345678' do
-        bd = BigDecimal(-123456789012345678) / BigDecimal(10000000000000000000)
-        bd.to_dec64_string.must_equal "-0.012345678901234568"
+      it 'should return "-0.01234567" for -0.012345674' do
+        bd = BigDecimal(-12345674) / BigDecimal(1000000000)
+        bd.to_dec64_string.must_equal "-0.01234567"
       end
       it 'should return "Nan" for NaN' do
         BigDecimal('NaN').to_dec64_string.must_equal "NaN"
@@ -46,9 +56,13 @@ describe RedTest do
       it 'should return "Nan" for -Infinity' do
         BigDecimal('-Infinity').to_dec64_string.must_equal "NaN"
       end
+    #  it 'should handle max value' do
+    #   bd = BigDecimal(36028797018963967) * 1e127
+    #    BigDecimal(bd).to_dec64_string.must_equal "360287970189639670000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0"
+    #  end
       it 'should handle max value' do
-        bd = BigDecimal(36028797018963967) * 1e127
-        BigDecimal(bd).to_dec64_string.must_equal "360287970189639670000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0"
+        bd = BigDecimal(8388607) * 1e127
+        BigDecimal(bd).to_dec64_string.must_equal "83886070000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0"
       end
       it 'should return "NaN" for too big number' do
         bd = BigDecimal(36028797018963967) * 1e127 + 1
@@ -62,20 +76,40 @@ describe RedTest do
         bd = BigDecimal(1) * 1e-128
         BigDecimal(bd).to_dec64_string.must_equal '0.0'
       end
-      it 'should return "123456789012345640.0" for 123456789012345644' do
-        BigDecimal(123456789012345644).to_dec64_string.must_equal "123456789012345640.0"
+    #  it 'should return "123456789012345640.0" for 123456789012345644' do
+    #    BigDecimal(123456789012345644).to_dec64_string.must_equal "123456789012345640.0"
+    #  end
+      it 'should return "12345670.0" for 12345674' do
+        BigDecimal(12345674).to_dec64_string.must_equal "12345670.0"
       end
-      it 'should return "0.012345678901234564" for 0.0123456789012345644' do
-        bd = BigDecimal(123456789012345644) / BigDecimal(10000000000000000000)
-        bd.to_dec64_string.must_equal "0.012345678901234564"
+    #  it 'should return "0.012345678901234564" for 0.0123456789012345644' do
+    #   bd = BigDecimal(123456789012345644) / BigDecimal(10000000000000000000)
+    #    bd.to_dec64_string.must_equal "0.012345678901234564"
+    #  end
+      it 'should return "0.01234564" for 0.012345644' do
+        bd = BigDecimal(12345644) / BigDecimal(1000000000)
+        bd.to_dec64_string.must_equal "0.01234564"
       end
-      it 'should return "-123456789012345640.0" for -123456789012345644' do
-        BigDecimal(-123456789012345644).to_dec64_string.must_equal "-123456789012345640.0"
+    #  it 'should return "-123456789012345640.0" for -123456789012345644' do
+    #    BigDecimal(-123456789012345644).to_dec64_string.must_equal "-123456789012345640.0"
+    #  end
+      it 'should return "-12345640.0" for -12345644' do
+        BigDecimal(-12345644).to_dec64_string.must_equal "-12345640.0"
       end
-      it 'should return "-0.012345678901234564" for -0.0123456789012345644' do
-        bd = BigDecimal(-123456789012345644) / BigDecimal(10000000000000000000)
-        bd.to_dec64_string.must_equal "-0.012345678901234564"
-      end  
+    #  it 'should return "-0.012345678901234564" for -0.0123456789012345644' do
+    #    bd = BigDecimal(-123456789012345644) / BigDecimal(10000000000000000000)
+    #   bd.to_dec64_string.must_equal "-0.012345678901234564"
+    #  end 
+      it 'should return "-0.01234567" for -0.01234567' do
+        bd = BigDecimal(-1234567) / BigDecimal(100000000)
+        bd.to_dec64_string.must_equal "-0.01234567"
+      end
+      it 'should handle max neg value + smallest pos value' do
+        x = BigDecimal(-8388608) * (BigDecimal(10) ** BigDecimal(127))
+        y = BigDecimal(1) * (BigDecimal(10) ** BigDecimal(-127))
+        z = x + y
+        z.to_dec64_string.must_equal "-83886080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0"
+      end 
     end
     
     describe :to_red_money do
@@ -85,13 +119,21 @@ describe RedTest do
       it 'should return a negative money string literal' do
         BigDecimal(-1).to_red_money.must_equal '-$1.0'
       end
+    #  it 'should handle max value' do
+    #   bd = BigDecimal(36028797018963967) * 1e127
+    #    BigDecimal(bd).to_red_money.must_equal "$360287970189639670000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0"
+    #  end
       it 'should handle max value' do
-        bd = BigDecimal(36028797018963967) * 1e127
-        BigDecimal(bd).to_red_money.must_equal "$360287970189639670000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0"
+        bd = BigDecimal(8388607) * 1e127
+        BigDecimal(bd).to_red_money.must_equal "$83886070000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0"
       end
+    #  it 'should handle min value' do
+    #    bd = BigDecimal(-36028797018963967) * 1e127
+    #    bd.to_red_money.must_equal "-$360287970189639670000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0"
+    #  end
       it 'should handle min value' do
-        bd = BigDecimal(-36028797018963967) * 1e127
-        bd.to_red_money.must_equal "-$360287970189639670000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0"
+        bd = BigDecimal(-8388607) * 1e127
+        bd.to_red_money.must_equal "-$83886070000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0"
       end
       it 'should convert infinity to nan' do
         BigDecimal('Infinity').to_red_money.must_equal '$NaN'
