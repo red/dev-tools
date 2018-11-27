@@ -68,16 +68,6 @@ module RedValues
           s.insert 0, '$'
         end
       end
-      
-      def to_to_red_money
-        s = self.to_dec64_string
-        if s == 'NaN' then
-          value = '9999999999999999999'
-        else
-          value = s
-        end
-        'to money! "' + value + '"' 
-      end
             
     end
        

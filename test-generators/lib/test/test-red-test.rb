@@ -141,7 +141,7 @@ describe RedTest do
       it 'should convert +infinity to nan' do
         BigDecimal('+Infinity').to_red_money.must_equal '$NaN'
       end
-      it 'should convert infinity to nan' do
+      it 'should convert -infinity to nan' do
         BigDecimal('-Infinity').to_red_money.must_equal '$NaN'
       end
       it 'should handle nan' do
@@ -154,14 +154,6 @@ describe RedTest do
       it 'should return $0.0 for too small numbers' do
         bd = BigDecimal(1) * 1e-256
         bd.to_red_money.must_equal '$0.0'
-      end
-    end
-    describe :to_to_red_money do
-      it 'should return to money! "number"' do
-        BigDecimal(10).to_to_red_money.must_equal 'to money! "10.0"'
-      end
-      it 'should return to money! "9999999999999999999" for NaN' do
-        BigDecimal('NaN').to_to_red_money.must_equal 'to money! "9999999999999999999"'
       end
     end
   end
@@ -268,6 +260,9 @@ describe RedTest do
     describe :set_word do
       it 'should generate code to set a word to a Red value' do
         @rt.set_word('x', 1).must_equal "\t\tx: 1\n"
+      end
+      it 'should convert a BigDecimal to a Red money value' do
+        @rt.set_word('z', BigDecimal(1), :to_red_money).must_equal "\t\tz: $1.0\n"
       end
       it 'should optionally convert a value' do
         @rt.set_word('y', 1, :to_red_i256).must_equal "\t\t" + 'y: to-i256 #{01}' + "\n"
